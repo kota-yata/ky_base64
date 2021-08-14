@@ -1,9 +1,9 @@
-import { base64Chars } from './common.ts';
+import { base64Chars } from "./common.ts";
 
-const letterToUtf8Array = (letter: string): number[] => {
+const encodeUtf8 = (letter: string): number[] => {
   const utf8Escaped = unescape(encodeURIComponent(letter));
   const first = utf8Escaped.charCodeAt(0);
-  if (first >= 128 && first < 192) throw new Error('Incorrect char code');
+  if (first >= 128 && first < 192) throw new Error("Incorrect char code");
   if (first < 128) return [first];
   const second = utf8Escaped.charCodeAt(1);
   if (first < 224) return [first, second];
@@ -17,12 +17,14 @@ const letterToUtf8Array = (letter: string): number[] => {
 const strToDataView = (str: string): [DataView, number] => {
   const codeArray: number[] = [];
   [...str].map((letter: string) => {
-    const utf8 = letterToUtf8Array(letter);
+    const utf8 = encodeUtf8(letter);
     codeArray.push(...utf8);
   });
   const arrayBuffer: ArrayBuffer = new ArrayBuffer(codeArray.length);
   const dataView: DataView = new DataView(arrayBuffer);
-  codeArray.map((num, index) => { dataView.setUint8(index, num); });
+  codeArray.map((num, index) => {
+    dataView.setUint8(index, num);
+  });
   return [dataView, codeArray.length];
 };
 
@@ -65,7 +67,9 @@ const convert8to6 = (dataView: DataView, length: number) => {
 };
 
 const generateEncodeResult = (new6BitsArray: number[]): string => {
-  const mod4 = new6BitsArray.length % 4 === 0 ? 0 : 4 - (new6BitsArray.length % 4);
+  const mod4 = new6BitsArray.length % 4 === 0
+    ? 0
+    : 4 - (new6BitsArray.length % 4);
   let result = "";
   new6BitsArray.map((bits: number) => {
     result += base64Chars[bits];
