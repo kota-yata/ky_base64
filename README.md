@@ -1,6 +1,13 @@
 # Base64 on Deno
 
+[Use on Deno](https://deno.land/x/ky_base64)
+
 Base64 implementation written in TypeScript. UTF-8 coding is available.
 
-Note that this repo is just implementation, not a library. Please use
-[This library](https://deno.land/x/base64) to encode with Base64 on Deno.
+# Usage
+```ts
+import Base64 from 'https://denopkg.com/kota-yata/ky_base64/index.ts';
+
+const encoded = Base64.encode('abcdef');
+const decoded = Base64.decode(encoded);
+```
