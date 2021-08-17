@@ -1,10 +1,5 @@
 import Base64 from "../index.ts";
 
-interface expected {
-  encode: string;
-  decode: string;
-}
-
 const red = "\u001b[31m";
 const green = "\u001b[32m";
 const yellow = "\u001b[33m";
@@ -21,7 +16,7 @@ const execute = (title: string, str: string, expected: string): void => {
   }
   console.log(`${green}✔️ Encode test Passed${reset}`);
   const decode = Base64.decode(encode);
-  if (decode === expected) {
+  if (decode !== str) {
     console.log(
       `${red}Decode test failed!! : Expected result is ${str} but got ${decode}${reset}`,
     );
