@@ -1,16 +1,5 @@
 import { base64Chars } from "./common.ts";
 
-const strToDataView = (str: string): [DataView, number] => {
-  const encoder = new TextEncoder();
-  const codeArray = encoder.encode(str);
-  const arrayBuffer: ArrayBuffer = new ArrayBuffer(codeArray.length);
-  const dataView: DataView = new DataView(arrayBuffer);
-  for (let i = 0; i < codeArray.length; i++) {
-    dataView.setUint8(i, codeArray[i]);
-  }
-  return [dataView, codeArray.length];
-};
-
 interface splitted {
   mainBits: number;
   extraBits: number;
@@ -31,15 +20,15 @@ const splitNum = (num: number, i: number): splitted => {
   return { mainBits, extraBits };
 };
 
-const convert8to6 = (dataView: DataView, length: number) => {
+const convert8to6 = (uint8Array: Uint8Array) => {
   let extra = 0;
   const new6BitsArray: number[] = [];
-  for (let i = 0; i < length; i++) {
-    const num = dataView.getUint8(i);
+  for (let i = 0; i < uint8Array.length; i++) {
+    const num = uint8Array[i];
     const splitted: splitted = splitNum(num, i);
     const main = splitted.mainBits + extra;
     new6BitsArray.push(main);
-    if (i % 3 === 2 || i === length - 1) {
+    if (i % 3 === 2 || i === uint8Array.length - 1) {
       new6BitsArray.push(splitted.extraBits);
       extra = 0;
     } else {
@@ -61,10 +50,11 @@ const generateEncodeResult = (new6BitsArray: number[]): string => {
   return result;
 };
 
-// encoding with TypedArray and DataView
+// encoding with TypedArray
 export const encode = (str: string) => {
-  const [dataView, length] = strToDataView(str);
-  const new6BitsArray: number[] = convert8to6(dataView, length);
-  const result: string = generateEncodeResult(new6BitsArray);
+  const encoder = new TextEncoder();
+  const uint8Array = encoder.encode(str);
+  const new6BitsArray = convert8to6(uint8Array);
+  const result = generateEncodeResult(new6BitsArray);
   return result;
 };
