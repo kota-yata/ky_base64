@@ -5,24 +5,29 @@ interface expected {
   decode: string;
 }
 
+const red     = '\u001b[31m';
+const green   = '\u001b[32m';
+const yellow  = '\u001b[33m';
+const reset   = '\u001b[0m';
+
 const execute = (title: string, str: string, expected: string): void => {
-  console.log(`---${title}---`);
+  console.log(`${yellow}---${title}---${reset}`);
   const encode = Base64.encode(str);
   if (encode !== expected) {
     console.log(
-      `Encode test failed!! : Expected result is ${expected} but got ${encode}`,
+      `${red}Encode test failed!! : Expected result is ${expected} but got ${encode}${reset}`,
     );
     return;
   }
-  console.log("✔️ Encode test Passed");
+  console.log(`${green}✔️ Encode test Passed${reset}`);
   const decode = Base64.decode(encode);
   if (decode === expected) {
     console.log(
-      `Decode test failed!! : Expected result is ${str} but got ${decode}`,
+      `${red}Decode test failed!! : Expected result is ${str} but got ${decode}${reset}`,
     );
     return;
   }
-  console.log("✔️ Decode test Passed");
+  console.log(`${green}✔️ Decode test Passed${reset}`);
 };
 
 execute(
