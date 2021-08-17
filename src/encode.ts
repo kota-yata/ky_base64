@@ -1,30 +1,13 @@
 import { base64Chars } from "./common.ts";
 
-const encodeUtf8 = (letter: string): number[] => {
-  const utf8Escaped = unescape(encodeURIComponent(letter));
-  const first = utf8Escaped.charCodeAt(0);
-  if (first >= 128 && first < 192) throw new Error("Incorrect char code");
-  if (first < 128) return [first];
-  const second = utf8Escaped.charCodeAt(1);
-  if (first < 224) return [first, second];
-  const third = utf8Escaped.charCodeAt(2);
-  if (first < 240) return [first, second, third];
-  const fourth = utf8Escaped.charCodeAt(3);
-  if (first < 248) return [first, second, third, fourth];
-  return [];
-};
-
 const strToDataView = (str: string): [DataView, number] => {
-  const codeArray: number[] = [];
-  [...str].map((letter: string) => {
-    const utf8 = encodeUtf8(letter);
-    codeArray.push(...utf8);
-  });
+  const encoder = new TextEncoder();
+  const codeArray = encoder.encode(str);
   const arrayBuffer: ArrayBuffer = new ArrayBuffer(codeArray.length);
   const dataView: DataView = new DataView(arrayBuffer);
-  codeArray.map((num, index) => {
-    dataView.setUint8(index, num);
-  });
+  for (let i = 0; i < codeArray.length; i++) {
+    dataView.setUint8(i, codeArray[i]);
+  }
   return [dataView, codeArray.length];
 };
 
